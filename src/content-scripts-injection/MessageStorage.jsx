@@ -24,7 +24,6 @@ export default class MessageStorage {
 					messages.shift();
 					if (messages.length == 0) {
 						delete this._P_channel2unsentMessages[channelId];
-						ChannelItem.removeChannelInArray(this._P_channels, channelId);
 					}
 					// 不要发的那么快，55秒左右发一个就好了
 					channelItem.nextSendableTime = now + Math.max(channelItem.slowModeInterval, 55*1000) + Math.random()*5000;
@@ -34,6 +33,18 @@ export default class MessageStorage {
 				}
 			}
 		}
+
+		// 顺便清理已经过期的 channel，一次清理一个就好
+		for (let i = 0; i < this._P_channels.length; ++i) {
+			let channelItem = this._P_channels[i];
+			if (channelItem.nextSendableTime < now) {
+				log(`清理过期的channel: ${JSON.stringify(channelItem)}`);
+				this._P_channels.splice(i, 1);
+				this._P_flushAllChannelsToStroage();
+				break;
+			}
+		}
+
 		return result;
 	}
 
@@ -42,6 +53,8 @@ export default class MessageStorage {
 		if (!messages) {
 			messages = []
 			this._P_channel2unsentMessages[messageItem.channelId] = messages;
+		}
+		if (!ChannelItem.isChannelInArray(this._P_channels, messageItem.channelId)) {
 			this._P_channels.push(new ChannelItem(messageItem.guildId, messageItem.channelId, slowModeInterval));
 			this._P_flushAllChannelsToStroage();
 		}

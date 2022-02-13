@@ -21,49 +21,49 @@ import MessageStorage from './MessageStorage';
 
 export default class ContentScriptsInjection {
     constructor() {
-        console.log('[DCH] 2');
         this._P_messageStorageInstance = new MessageStorage();
         this._P_canSendMessage = true;
-        this.initChatInputHook();
+        document.addEventListener('DOMContentLoaded', () => this.initChatInputHook());
     }
 
-    initChatInputHook() {
-        document.addEventListener('DOMContentLoaded', () => {
-            delay(5000).then(() => {
-                // 安装钩子
-                hookChatInput(this._P_messageStorageInstance);
-                // 页面刷新的时候需要重新安装钩子
-                let e = document.querySelector('[class*="chat-"] [class*="chatContent-"]').parentElement;
-                let observerOptions = {
-                    childList: true,
-                    attributes: false,
-                    subtree: false,
+    async initChatInputHook() {
+        await delay(5000);
+        // 安装钩子
+        hookChatInput(this._P_messageStorageInstance);
+        // 页面刷新的时候需要重新安装钩子
+        let e = document.querySelector('[class*="chat-"] [class*="chatContent-"]').parentElement;
+        let observerOptions = {
+            childList: true,
+            attributes: false,
+            subtree: false,
+        }
+        let observer = new MutationObserver((mutationList, observer) => {
+            mutationList.forEach((mutation) => {
+                if (mutation.addedNodes.length == 1 && mutation.removedNodes.length == 0) {
+                    hookChatInput(this._P_messageStorageInstance);
                 }
-                let observer = new MutationObserver((mutationList, observer) => {
-                    mutationList.forEach((mutation) => {
-                        if (mutation.addedNodes.length == 1 && mutation.removedNodes.length == 0) {
-                            hookChatInput(this._P_messageStorageInstance);
-                        }
-                    });
-                });
-                observer.observe(e, observerOptions);
-                // 调度发消息：13 s 一个循环， 小步快跑
-                setInterval(() => {
-                    setTimeout(() => {
-                        if (!this._P_canSendMessage) {
-                            return;
-                        }
-                        let messageItem = this._P_messageStorageInstance.takeCurrentSendableMessage();
-                        if (!!messageItem) {
-                            log(`[+] ${getDateString(new Date)}: try send message: ${JSON.stringify(messageItem)}`);
-                            sendMessageToChannel(messageItem.guildId, messageItem.channelId, messageItem.content, messageItem.replyingMessageId);
-                        } else {
-                            log(`[+] ${getDateString(new Date)}: no need to send message`);
-                        }
-                    }, Math.random() * 2 * 1000);
-                }, 13 * 1000);
-            })
+            });
         });
+        observer.observe(e, observerOptions);
+        // 调度发消息：13 s 一个循环， 小步快跑
+        while(true) {
+            await this.checkAndSendMessage();
+            await delay(Math.random() * 2 * 1000 + 13 * 1000);
+        }
+    }
+
+    async checkAndSendMessage() {
+        if (!this._P_canSendMessage) {
+            return;
+        }
+        let messageItem = this._P_messageStorageInstance.takeCurrentSendableMessage();
+        if (!!messageItem) {
+            log(`[+] ${getDateString(new Date)}: try send message: ${JSON.stringify(messageItem)}`);
+            return sendMessageToChannel(messageItem.guildId, messageItem.channelId, messageItem.content, messageItem.replyingMessageId);
+        } else {
+            log(`[+] ${getDateString(new Date)}: no need to send message`);
+            return;
+        }       
     }
 
 // (async () => {

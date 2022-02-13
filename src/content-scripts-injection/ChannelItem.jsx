@@ -24,6 +24,10 @@ export default class ChannelItem {
 		return index;
 	}
 
+	static isChannelInArray(channelArray, channelId) {
+		return ChannelItem._P_findIndexFromArray(channelArray, channelId) != -1;
+	}
+
 	static findChannelItemInArray(channelArray, channelId) {
 		var index = ChannelItem._P_findIndexFromArray(channelArray, channelId);
 		if (index == -1) {
