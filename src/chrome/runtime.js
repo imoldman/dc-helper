@@ -3,4 +3,8 @@ function reload() {
     chrome.runtime.reload();
 }
 
-export { reload };
+function getURL(src) {
+    return chrome.extension.getURL(src);
+}
+
+export { reload, getURL };

@@ -1,5 +1,5 @@
 {
-  "name": "antd-chrome-extension-boilerplate",
+  "name": "dc_extension_new",
   "version": "1.0.0",
   "description": "使用 react + antd 开发 chrome-extension 的脚手架工程",
   "scripts": {
@@ -40,7 +40,7 @@
     "style-loader": "^2.0.0",
     "url-loader": "^4.1.1",
     "webpack": "^5.38.1",
-    "webpack-cli": "^4.7.2",
+    "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.8.0"
   },

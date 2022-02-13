@@ -18,6 +18,7 @@ module.exports = {
         popup: './src/popup',
         background: './src/background',
         contentScripts: './src/content-scripts',
+        contentScriptsInjection:'./src/content-scripts-injection',
         demo: './src/view/demo'
     },
     output: {

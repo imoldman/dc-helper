@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { render } from 'react-dom';
 import { contentClient } from '../chrome';
@@ -11,6 +12,8 @@ export default class ContentScripts {
     }
 
     init() {
+        // 加载 contentScript 到网页上下文
+        this.injectContentSript();
         // 注意，必须设置了run_at=document_start 此段代码才会生效
         document.addEventListener('DOMContentLoaded', () => {
             this.initContainer();
@@ -39,6 +42,21 @@ export default class ContentScripts {
         this.container.setAttribute('id', 'chrome-extension-content-base-element');
         this.container.setAttribute('class', WRAPPER_CLASS_NAME);
         document.body.appendChild(this.container);
+    }
+
+    injectContentSript() {
+        // save storage token
+        var s = document.createElement('script');
+        s.type = 'text/javascript';
+        s.innerText = 'var W = {}; W.localStorage = window.localStorage; W.token = W.localStorage.getItem("token")';
+        document.documentElement.appendChild(s);
+
+        // add content
+        var f = chrome.extension.getURL('./js/contentScriptsInjection.js');
+        var s = document.createElement('script');
+        s.type = 'text/javascript';
+        s.src = f;
+        document.documentElement.appendChild(s);        
     }
 
     showContainer() {
