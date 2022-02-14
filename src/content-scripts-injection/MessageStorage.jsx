@@ -10,6 +10,13 @@ export default class MessageStorage {
 			let messages = this._P_getUnsentMessagesFromStorageOfChannel(c.channelId);
 			this._P_channel2unsentMessages[c.channelId] = messages;
 		});
+		this.clearChannelEntry();
+	}
+
+	clearChannelEntry() {
+		this._P_channels = []
+		this._P_channel2unsentMessages = {};
+		this._P_flushAllChannelsToStroage();
 	}
 
 	takeCurrentSendableMessage() {

@@ -6,6 +6,7 @@ import {
     getCurrentGuildId,
     getCurrentChannelId,
     getChannelMessages,
+    SendMessageError,
     sendMessageToChannel,
     isReplying,
     closeReplyBar,
@@ -17,13 +18,23 @@ import {
     hookChatInput,
 } from './util';
 import MessageStorage from './MessageStorage';
-
+import DialogFetcher from './DialogFetcher';
+import MessageItem from './MessageItem';
 
 export default class ContentScriptsInjection {
     constructor() {
+        // 初始化
         this._P_messageStorageInstance = new MessageStorage();
         this._P_canSendMessage = true;
+        this._P_dialogFetcher = new DialogFetcher(this._P_messageStorageInstance);
+        // 行动
         document.addEventListener('DOMContentLoaded', () => this.initChatInputHook());
+        this.startDialogFetcher();
+    }
+
+    async startDialogFetcher() {
+        await delay(3000);
+        return this._P_dialogFetcher.start();
     }
 
     async initChatInputHook() {
@@ -58,10 +69,16 @@ export default class ContentScriptsInjection {
         }
         let messageItem = this._P_messageStorageInstance.takeCurrentSendableMessage();
         if (!!messageItem) {
-            log(`[+] ${getDateString(new Date)}: try send message: ${JSON.stringify(messageItem)}`);
-            return sendMessageToChannel(messageItem.guildId, messageItem.channelId, messageItem.content, messageItem.replyingMessageId);
+            log(`[${getDateString(new Date)}] 发送: ${JSON.stringify(messageItem)}`);
+            let sentResult = await sendMessageToChannel(messageItem.guildId,
+                                                        messageItem.channelId,
+                                                        messageItem.content,
+                                                        messageItem.replyingMessageId);
+            if (sentResult[0] == SendMessageError.SUCCESS && messageItem.type == MessageItem.TYPE_SCHEDULED) {
+                return this._P_dialogFetcher.didMessageSend(messageItem.content, sentResult[1]);
+            }
         } else {
-            log(`[+] ${getDateString(new Date)}: no need to send message`);
+            log(`[${getDateString(new Date)}]: 无需发送`);
             return;
         }       
     }

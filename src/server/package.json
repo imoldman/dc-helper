@@ -1,0 +1,10 @@
+{
+    "type": "module",
+    "dependencies": {
+        "config": "^3.3.7",
+        "cors": "^2.8.5",
+        "express": "^4.17.2",
+        "mongoose": "^5.9.19",
+        "winston": "^3.6.0"
+    }
+}
