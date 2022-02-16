@@ -11,7 +11,7 @@ module.exports = () => merge(commonConfig, {
         contentScripts: ['./src/content-scripts', './src/reload/ContentScript'],
         demo: './src/view/demo'
     },
-    devtool: 'source-map',
+    devtool: "inline-source-map",
     plugins: [
         new CompilerEmitPlugin()
     ],

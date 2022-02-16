@@ -189,10 +189,6 @@ module.exports = {
             filename: path.resolve(rootDir, 'dist/html/view.html'),
             chunks: ['demo']
         }),
-        new webpack.SourceMapDevToolPlugin({
-            append: '\n//# sourceMappingURL=file:///Users/lixianliang/Desktop/code/dc_extension_new/dist/js/[url]',
-            filename: '[name].map',
-        }),
         new webpack.DefinePlugin({
             WRAPPER_CLASS_NAME: `'${wrapperClassName}'`
         })
