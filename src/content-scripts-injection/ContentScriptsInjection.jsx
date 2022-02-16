@@ -20,6 +20,7 @@ import {
 import MessageStorage from './MessageStorage';
 import DialogFetcher from './DialogFetcher';
 import MessageItem from './MessageItem';
+import WebSocketHooker from './WebSocketHooker';
 
 export default class ContentScriptsInjection {
     constructor() {
@@ -27,6 +28,7 @@ export default class ContentScriptsInjection {
         this._P_messageStorageInstance = new MessageStorage();
         this._P_canSendMessage = true;
         this._P_dialogFetcher = new DialogFetcher(this._P_messageStorageInstance);
+        this._P_webSocketHooker = new WebSocketHooker();
         // 行动
         document.addEventListener('DOMContentLoaded', () => this.initChatInputHook());
         this.startDialogFetcher();

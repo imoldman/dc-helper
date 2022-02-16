@@ -37,11 +37,11 @@ export default class DialogFetcher {
                                           result.message.content,
                                           result.message.replyId,
                                           (new Date()).getTime());
-        return this.messageStorage.appendUnsentMessage(messageItem, 10*1000, false);
+        return this.messageStorage.appendUnsentMessage(messageItem, 30*1000, false);
     }
 
     async didMessageSend(content, messageId) {
-        await fetch('http://localhost:3000/ack', {
+        await fetch('http://localhost:3000/didMessageSend', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

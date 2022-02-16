@@ -91,7 +91,14 @@ class Dialog {
             return null;
         }
         let rawContent = dialog[this.nextIndex];
-        return new NewMessage(this.name2User[rawContent[0]], this.nextIndex, rawContent.substring(2), this.nextReplyId);
+        if (!rawContent || rawContent.length == 0) {
+            return null;
+        }
+        let name = rawContent[0];
+        if (!this.name2User[name]) {
+            return null;
+        }
+        return new NewMessage(this.name2User[name], this.nextIndex, rawContent.substring(2), this.nextReplyId);
     }
 
     // 根据 uid 获取下一个消息，如果下一个消息不是该 uid 的，返回 null
@@ -161,7 +168,7 @@ app.get('/next', (req, res) => {
     }
 });
 
-app.post('/ack', (req, res) => {
+app.post('/didMessageSend', (req, res) => {
     let uid = req.body.uid; 
     let user = dialog.getUserByUid(uid);
     let sentMessage = new SentMessage(
