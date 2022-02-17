@@ -1,5 +1,8 @@
 import pako from 'pako';
 import BusinessManager from './BusinessManager';
+import ATMeMessageHandler from './MessageHandler/AtMeMessageHandler';
+import CommonRumbleRoyaleMessageHandler from './MessageHandler/CommonRumbleRoyaleMessageHandler';
+import IgnoreMessageHandler from './MessageHandler/IgnoreMessageHanlder';
 import JoinRumbleRoyaleMessageHanlder from './MessageHandler/JoinRumbleRoyaleMessageHandler';
 import {log, error} from './util';
 
@@ -16,6 +19,9 @@ export default class WebSocketListener {
     initMessaegHandlers() {
         this.messageHandlers = [];
         this.messageHandlers.push(new JoinRumbleRoyaleMessageHanlder(this.businessManager));
+        this.messageHandlers.push(new CommonRumbleRoyaleMessageHandler(this.businessManager));
+        this.messageHandlers.push(new ATMeMessageHandler(this.businessManager));
+        this.ignoreMessageHandler = new IgnoreMessageHandler(this.businessManager);
     }
 
     initInflate() {
@@ -31,10 +37,22 @@ export default class WebSocketListener {
     }
 
     initListener() {
-        window.beforeSend = (data) => {
+        window.onDCHWebSocketReconnect = (socket) => {
+            log(`WebSocekt Reconnected`);
+            this.socket = socket;
+            this.initInflate();
+        }
+        window.onDCHWebSocketBeforeSend = (socket, data) => {
             // log(`beforeSend: ${data}`);
         }
-        window.onDCHWebSocketMessage = (data) => {
+        window.onDCHWebSocketMessage = (socket, data) => {
+            if (!this.socket) {
+                this.socket = socket;
+            }
+            if (socket != this.socket) {
+                log(`not matched web socket`);
+                return;
+            }
             // console.log(`[DCH][+] recv: ${data}, length = ${data.byteLength}, inflating...`);
             this.inflate.push(data);
             // console.log(`[DCH][+] inflating result, last size: ${this.inflate.strm.next_out}`);
@@ -69,17 +87,21 @@ export default class WebSocketListener {
             if (type == 'READY') {
                 this.businessManager.fillDataFromWebSocketReadyJson(j['d']);
             } else if (type == 'MESSAGE_CREATE') {
-                this.messageHandlers.forEach((h) => {
-                    if (h.needProcess(j['d'], JSON.stringify(j['d']))) {
-                        let data = h.pickUpDataFromMessage(j['d']);
-                        if (data) {
-                            h.action(data);
+                let messageJ = j['d'];
+                let messageS = JSON.stringify(messageJ);
+                if (!this.ignoreMessageHandler.isHittingBlacklist(messageJ, messageS)) {
+                    this.messageHandlers.forEach((h) => {
+                        if (h.needProcess(messageJ, messageS)) {
+                            let data = h.pickUpDataFromMessage(messageJ);
+                            if (data) {
+                                h.action(data);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
-        } catch (error) {
-            error(`message process error: ${error}, message:${message}`);
+        } catch (e) {
+            error(`message process error: ${e}, message(${message.length}):${message}`);
         }
 
     }

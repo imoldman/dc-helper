@@ -11,9 +11,12 @@ let DCHWebSocket = class extends WebSocket { \
         console.log('[DCH] in DCHWebSocket constructor'); \
         super(s); \
         this.messageBuffer = []; \
+        if (window.onDCHWebSocketReconnect) { \
+            window.onDCHWebSocketReconnect(this); \
+        } \
     } \
     send(s) { \
-        // console.log('[DCH] in DCHWebSocket send: ' + s); \
+        /* console.log('[DCH] in DCHWebSocket send: ' + s); */\
         return super.send(s); \
     } \
     set onmessage(f) { \
@@ -25,11 +28,11 @@ let DCHWebSocket = class extends WebSocket { \
             } else { \
                 if (this.messageBuffer.length > 0) { \
                     this.messageBuffer.forEach((x) => { \
-                        window.onDCHWebSocketMessage(x); \
+                        window.onDCHWebSocketMessage(this, x); \
                     }); \
                     this.messageBuffer = []; \
                 } \
-                window.onDCHWebSocketMessage(evt.data); \
+                window.onDCHWebSocketMessage(this, evt.data); \
             }
             f(evt); \
         } \

@@ -3,11 +3,24 @@ import Channel from "./Channel";
 import Guild from "./Guild";
 import Role from "./Role";
 import {
-    log
+    log, error
 } from './util';
 
 export default class BusinessManager {
+    constructor() {
+        this.uid = JSON.parse(W.localStorage.getItem('user_id_cache'));
+    }
+
     fillDataFromWebSocketReadyJson(j) {
+        // self
+        let uid = j['user']['id'];
+        if (this.uid != uid) {
+            error(`Uid isn't correct, should be ${this.uid}, but is ${uid}, name is ${name}`);
+        }
+        this.uid = uid;
+        this.name = j['user']['username'];
+
+        // guild and channel
         this.guilds = [];
         let channelId2Channel = {};
         j['guilds'].forEach((guildJ) => {
@@ -51,13 +64,15 @@ export default class BusinessManager {
         });
         this.channelId2Channel = channelId2Channel;
 
-        log(`Init Business Manager: ${JSON.stringify(this.guilds)}`)
+        // log(`Init Business Manager: ${JSON.stringify(this.guilds)}`);
     }
 
     getChannelById(channelId) {
         return this.channelId2Channel[channelId];
     }
 
+    uid;
+    name;
     guilds;
     channelId2Channel;
 };

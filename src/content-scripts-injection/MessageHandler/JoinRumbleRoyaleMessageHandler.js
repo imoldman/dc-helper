@@ -1,4 +1,4 @@
-import { delay, error } from '../util'
+import { delay, log, error } from '../util'
 import G from '../G';
 
 export default class JoinRumbleRoyaleMessageHanlder {
@@ -6,19 +6,16 @@ export default class JoinRumbleRoyaleMessageHanlder {
         this.businessManager = businessManager;
     }
 
-    needProcess(messageJson, messageString) {
-        return messageJson['author'] &&
-               messageJson['author']['id'] == '693167035068317736' && 
-               messageString.indexOf('Rumble Royale hosted by') != -1 &&
-               messageString.indexOf('Click the emoji below to join') != -1;
+    needProcess(messageJ, messageS) {
+        return messageJ['author'] &&
+        messageJ['author']['id'] == '693167035068317736' && 
+        messageS.indexOf('Click the emoji below to join') != -1;
     }
 
     pickUpDataFromMessage(messageJ) {
-        let channelId = messageJ['channel_id'];
-        let messageId = messageJ['id'];
         return {
-            channelId: channelId,
-            messageId: messageId,
+            channelId: messageJ['channel_id'],
+            messageId: messageJ['id'],
         }
     }
 
@@ -27,7 +24,7 @@ export default class JoinRumbleRoyaleMessageHanlder {
 
         // notification
         await Notification.requestPermission();
-        let messageUrl = `http://discord.com/channels/${channel.guild.id}/${data.channelId}/${data.messageId}`;
+        let messageUrl = `https://discord.com/channels/${channel.guild.id}/${data.channelId}/${data.messageId}`;
         let notification = new Notification(`Join Rumble Royale - ${channel.guild.name}`, {
             body: `Channel: ${channel.name}`
         });
@@ -51,10 +48,9 @@ export default class JoinRumbleRoyaleMessageHanlder {
           }
         );
         if (response.status != 204) {
-            error(`Join Rumble Royale Failed, message: ${messageUrl}`);
+            error(`Rumble Royale Join Failed, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
+        } else{
+            log(`Rumble Royale Join Success, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
         }
     }
 }
-
-
-
