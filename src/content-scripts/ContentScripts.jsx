@@ -13,14 +13,14 @@ let DCHWebSocket = class extends WebSocket { \
         this.messageBuffer = []; \
     } \
     send(s) { \
-        console.log('[DCH] in DCHWebSocket send'); \
+        // console.log('[DCH] in DCHWebSocket send: ' + s); \
         return super.send(s); \
     } \
     set onmessage(f) { \
         console.log('[DCH] in DCHWebSocket set onmessage'); \
         super.onmessage = (evt) => { \
             if (!window.onDCHWebSocketMessage) { \
-                console.log('[DCH] no onDCHWebSocketMessage, save to buffer'); \
+                console.log('[DCH] no onDCHWebSocketMessage, save to buffer, length = ' + evt.data.byteLength); \
                 this.messageBuffer.push(evt.data); \
             } else { \
                 if (this.messageBuffer.length > 0) { \

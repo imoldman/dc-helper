@@ -1,4 +1,4 @@
-import MessageItem from "./MessageItem";
+import StorageMessageItem from "./StorageMessageItem";
 import G from "./G";
 
 function delay(ms) {
@@ -8,6 +8,9 @@ function delay(ms) {
 const LOG_PREFIX = '[DCH] ';
 function log(s) {
     console.log(LOG_PREFIX + s);
+}
+function error(s) {
+    console.error(LOG_PREFIX + s);
 }
 
 function getDateString(date) {
@@ -189,7 +192,7 @@ function hookChatInput(messageStorageInstance) {
             let content = getTypingMessageContent();
             if (!!content) {
                 sendCmdBackspaceToInput(e);
-                let messageItem = new MessageItem(MessageItem.TYPE_MANUAL, 
+                let messageItem = new StorageMessageItem(StorageMessageItem.TYPE_MANUAL, 
                                                   getCurrentGuildId(), 
                                                   getCurrentChannelId(),
                                                   content,
@@ -209,6 +212,7 @@ function hookChatInput(messageStorageInstance) {
 export {
     delay,
     log,
+    error,
     LOG_PREFIX,
     getDateString,
     getCurrentGuildId,
