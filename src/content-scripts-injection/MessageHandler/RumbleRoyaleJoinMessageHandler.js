@@ -1,13 +1,15 @@
 import { delay, log, error } from '../util'
 import G from '../G';
+import BaseMessageHandler from './BaseMessageHandler';
 
-export default class RumbleRoyaleJoinMessageHanlder {
+export default class RumbleRoyaleJoinMessageHanlder extends BaseMessageHandler {
     constructor(businessManager) {
-        this.businessManager = businessManager;
+        super(businessManager);
     }
 
     needProcess(type, messageJ) {
-        return messageJ['author'] &&
+        return super.needProcess(type, messageJ) && 
+        messageJ['author'] &&
         messageJ['author']['id'] == '693167035068317736' && 
         JSON.stringify(messageJ).indexOf('Click the emoji below to join') != -1;
     }

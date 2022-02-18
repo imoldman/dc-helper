@@ -2,4 +2,4 @@ import React from 'react';
 import { render } from 'react-dom';
 import Demo from './Demo';
 
-render(<Demo />, document.querySelector('#chrome-extension-view'));
+// render(<Demo />, document.querySelector('#chrome-extension-view'));

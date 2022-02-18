@@ -11,8 +11,8 @@ let DCHWebSocket = class extends WebSocket { \
         console.log('[DCH] in DCHWebSocket constructor'); \
         super(s); \
         this.messageBuffer = []; \
-        if (window.onDCHWebSocketReconnect) { \
-            window.onDCHWebSocketReconnect(this); \
+        if (window.webSocketListener) { \
+            window.webSocketListener.onDCHWebSocketReconnect(this); \
         } \
     } \
     send(s) { \
@@ -22,17 +22,17 @@ let DCHWebSocket = class extends WebSocket { \
     set onmessage(f) { \
         console.log('[DCH] in DCHWebSocket set onmessage'); \
         super.onmessage = (evt) => { \
-            if (!window.onDCHWebSocketMessage) { \
-                console.log('[DCH] no onDCHWebSocketMessage, save to buffer, length = ' + evt.data.byteLength); \
+            if (!window.webSocketListener) { \
+                console.log('[DCH] no webSocketListener.onDCHWebSocketMessage, save to buffer, length = ' + evt.data.byteLength); \
                 this.messageBuffer.push(evt.data); \
             } else { \
                 if (this.messageBuffer.length > 0) { \
                     this.messageBuffer.forEach((x) => { \
-                        window.onDCHWebSocketMessage(this, x); \
+                        window.webSocketListener.onDCHWebSocketMessage(this, x); \
                     }); \
                     this.messageBuffer = []; \
                 } \
-                window.onDCHWebSocketMessage(this, evt.data); \
+                window.webSocketListener.onDCHWebSocketMessage(this, evt.data); \
             }
             f(evt); \
         } \

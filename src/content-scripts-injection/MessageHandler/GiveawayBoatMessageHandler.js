@@ -1,14 +1,16 @@
 import { delay, log } from '../util'
 import G from '../G'
 import NotificationHelper from '../NotificationHelper';
+import BaseMessageHandler from './BaseMessageHandler';
 
-export default class GiveawayBoatMessageHanlder {
+export default class GiveawayBoatMessageHanlder extends BaseMessageHandler{
     constructor(businessManager) {
-        this.businessManager = businessManager;
+        super(businessManager);
     }
 
     needProcess(type, messageJ) {
-        return messageJ['author'] &&
+        return super.needProcess(type, messageJ) &&
+        messageJ['author'] &&
         messageJ['author']['id'] == '530082442967646230';
     }
 

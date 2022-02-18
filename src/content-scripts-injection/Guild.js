@@ -2,7 +2,7 @@ export default class Guild {
     constructor(guildId, name) {
         this.id = guildId;
         this.name = name;
-        this.channles = [];
+        this.channels = [];
         this.roles = [];
         this.bots = [];
         this.selfRoles = [];
@@ -19,7 +19,7 @@ export default class Guild {
 
     id;
     name;
-    channles;  // [Channel]
+    channels;  // [Channel]
     roles;     // [Role]
     bots;      // [Bot]
     selfRoles;  // [Role]，自己的角色

@@ -1,10 +1,13 @@
 import pako from 'pako';
 import BusinessManager from './BusinessManager';
 import ATMeMessageHandler from './MessageHandler/AtMeMessageHandler';
+import DynoGiveawayMessageHandler from './MessageHandler/DynoGiveawayMessageHandler';
 import GiveawayBoatMessageHanlder from './MessageHandler/GiveawayBoatMessageHandler';
 import GiveawayBotMessageHanlder from './MessageHandler/GiveawayBotMessageHanlder';
 import IgnoreMessageHandler from './MessageHandler/IgnoreMessageHanlder';
 import InviteTrackerGiveawayMessageHandler from './MessageHandler/InviteTrackerGiveawayMessageHandler';
+import DebugMesssageHandler from './MessageHandler/DebugMessageHanlder';
+import NewChannelHandler from './MessageHandler/NewChannelHandler';
 import RumbleRoyaleCommonMessageHandler from './MessageHandler/RumbleRoyaleCommonMessageHandler';
 import RumbleRoyaleJoinMessageHanlder from './MessageHandler/RumbleRoyaleJoinMessageHandler';
 import {log, error} from './util';
@@ -17,16 +20,25 @@ export default class WebSocketListener {
         this.initMessaegHandlers();
         this.initInflate();
         this.initListener();
+        window.webSocketListener = this;
     }
 
     initMessaegHandlers() {
         this.messageHandlers = [];
+        this.messageHandlers.push(new DebugMesssageHandler(this.businessManager, (type, messageJ) => {
+            if ((type == 'MESSAGE_CREATE' || type == 'MESSAGE_UPDATE') && messageJ['author'] && messageJ['author']['id'] == '155149108183695360') {
+                return true;
+            }
+            return false;
+        }));
         this.messageHandlers.push(new ATMeMessageHandler(this.businessManager));
         this.messageHandlers.push(new RumbleRoyaleJoinMessageHanlder(this.businessManager));
         this.messageHandlers.push(new RumbleRoyaleCommonMessageHandler(this.businessManager));
         this.messageHandlers.push(new InviteTrackerGiveawayMessageHandler(this.businessManager));
         this.messageHandlers.push(new GiveawayBotMessageHanlder(this.businessManager));
         this.messageHandlers.push(new GiveawayBoatMessageHanlder(this.businessManager));
+        this.messageHandlers.push(new DynoGiveawayMessageHandler(this.businessManager));
+        this.messageHandlers.push(new NewChannelHandler(this.businessManager));
         this.ignoreMessageHandler = new IgnoreMessageHandler(this.businessManager);
     }
 
@@ -43,15 +55,15 @@ export default class WebSocketListener {
     }
 
     initListener() {
-        window.onDCHWebSocketReconnect = (socket) => {
+        this.onDCHWebSocketReconnect = (socket) => {
             log(`WebSocekt Reconnected`);
             this.socket = socket;
             this.initInflate();
         }
-        window.onDCHWebSocketBeforeSend = (socket, data) => {
+        this.onDCHWebSocketBeforeSend = (socket, data) => {
             // log(`beforeSend: ${data}`);
         }
-        window.onDCHWebSocketMessage = (socket, data) => {
+        this.onDCHWebSocketMessage = (socket, data) => {
             if (!this.socket) {
                 this.socket = socket;
             }
@@ -92,7 +104,7 @@ export default class WebSocketListener {
             let type = j['t'];
             if (type == 'READY') {
                 this.businessManager.fillDataFromWebSocketReadyJson(j['d']);
-            } else if (type == 'MESSAGE_CREATE'/* || type == 'MESSAGE_UPDATE'*/) {
+            } else if (!!type){
                 let messageJ = j['d'];
                 let messageS = JSON.stringify(messageJ);
                 if (!this.ignoreMessageHandler.isHittingBlacklist(type, messageJ)) {
@@ -104,11 +116,14 @@ export default class WebSocketListener {
                             }
                         }
                     });
-                }
+                }                
             }
         } catch (e) {
             error(`message process error: ${e}, message(${message.length}):${message}, stack:\n ${e.stack}`);
         }
-
     }
+
+    onDCHWebSocketReconnect;
+    onDCHWebSocketBeforeSend;
+    onDCHWebSocketMessage;
 }

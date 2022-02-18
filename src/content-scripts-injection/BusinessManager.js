@@ -20,10 +20,7 @@ export default class BusinessManager {
             error(`Uid isn't correct, should be ${this.uid}, but is ${uid}, name is ${this.name}`);
         }
         this.uid = uid;
-        this.token = j['analytics_token'];
-        if (W.token == null) {
-            log(`W.token is null, refresh to ${this.token}`);
-        }
+        this.sessionId = j['session_id'];
 
         // guild and channel
         this.guilds = [];
@@ -48,7 +45,7 @@ export default class BusinessManager {
                     channelId2Channel[channelId] = channel;
                 }
             });
-            guild.channles = channels;
+            guild.channels = channels;
             // 角色和机器人
             let roles = [];
             let bots = [];
@@ -92,7 +89,8 @@ export default class BusinessManager {
             })
         })
 
-        // log(`Init Business Manager: ${JSON.stringify(this.guilds)}`);
+        // 保存原始信息，debug 用
+        this.raw = j;
     }
 
     getGuildById(guildId) {
@@ -110,6 +108,7 @@ export default class BusinessManager {
 
     uid;
     name;
+    sessionId;
     guilds;
     channelId2Channel;
 };

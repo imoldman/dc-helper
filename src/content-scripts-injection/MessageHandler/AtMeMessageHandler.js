@@ -1,16 +1,20 @@
 import NotificationHelper from '../NotificationHelper';
 import { delay, log, error } from '../util'
+import BaseMessageHandler from './BaseMessageHandler';
 
-export default class ATMeMessageHandler {
+export default class ATMeMessageHandler extends BaseMessageHandler {
     constructor(businessManager) {
-        this.businessManager = businessManager;
+        super(businessManager);
     }
 
-    needProcess(type, messageJson) {
-        let mentionsJson = messageJson['mentions'];
-        if (mentionsJson) {
-            for (let i in mentionsJson) {
-                let j = mentionsJson[i];
+    needProcess(type, messageJ) {
+        if (!super.needProcess(type, messageJ)){
+            return false;
+        }
+        let mentionsJ = messageJ['mentions'];
+        if (mentionsJ) {
+            for (let i in mentionsJ) {
+                let j = mentionsJ[i];
                 if (j['id'] && j['id'] == this.businessManager.uid) {
                     return true;
                 }

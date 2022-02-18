@@ -1,12 +1,14 @@
 import { log } from '../util'
+import BaseMessageHandler from './BaseMessageHandler';
 
-export default class RumbleRoyaleCommonMessageHandler {
+export default class RumbleRoyaleCommonMessageHandler extends BaseMessageHandler {
     constructor(businessManager) {
-        this.businessManager = businessManager;
+        super(businessManager);
     }
 
     needProcess(type, messageJ) {
-        return messageJ['author'] &&
+        return super.needProcess(type, messageJ) &&
+        messageJ['author'] &&
         messageJ['author']['id'] == '693167035068317736';
     }
 

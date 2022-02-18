@@ -1,11 +1,15 @@
 import { delay, log, error } from '../util'
+import BaseHandler from './BaseHandler';
 
-export default class IgnoreMessageHandler {
+export default class IgnoreMessageHandler extends BaseHandler {
     constructor(businessManager) {
-        this.businessManager = businessManager;
+        super(businessManager);
     }
 
     isHittingBlacklist(type, messageJ) {
+        if (type != 'MESSAGE_CREATE' && type != 'MESSAGE_UPDATE') {
+            return false;
+        }
         let channelId = messageJ['channel_id'];
         let guildId = messageJ['guild_id'];
         var guildName = null, channelName = null;
