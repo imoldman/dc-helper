@@ -1,9 +1,11 @@
 import pako from 'pako';
 import BusinessManager from './BusinessManager';
 import ATMeMessageHandler from './MessageHandler/AtMeMessageHandler';
-import CommonRumbleRoyaleMessageHandler from './MessageHandler/CommonRumbleRoyaleMessageHandler';
+import GiveawayBotMessageHanlder from './MessageHandler/GiveawayBotMessageHanlder';
 import IgnoreMessageHandler from './MessageHandler/IgnoreMessageHanlder';
-import JoinRumbleRoyaleMessageHanlder from './MessageHandler/JoinRumbleRoyaleMessageHandler';
+import InviteTrackerGiveawayMessageHandler from './MessageHandler/InviteTrackerGiveawayMessageHandler';
+import RumbleRoyaleCommonMessageHandler from './MessageHandler/RumbleRoyaleCommonMessageHandler';
+import RumbleRoyaleJoinMessageHanlder from './MessageHandler/RumbleRoyaleJoinMessageHandler';
 import {log, error} from './util';
 
 const CHUNK_SIZE = 1024 * 64;
@@ -18,9 +20,11 @@ export default class WebSocketListener {
 
     initMessaegHandlers() {
         this.messageHandlers = [];
-        this.messageHandlers.push(new JoinRumbleRoyaleMessageHanlder(this.businessManager));
-        this.messageHandlers.push(new CommonRumbleRoyaleMessageHandler(this.businessManager));
+        this.messageHandlers.push(new RumbleRoyaleJoinMessageHanlder(this.businessManager));
+        this.messageHandlers.push(new RumbleRoyaleCommonMessageHandler(this.businessManager));
         this.messageHandlers.push(new ATMeMessageHandler(this.businessManager));
+        this.messageHandlers.push(new InviteTrackerGiveawayMessageHandler(this.businessManager));
+        this.messageHandlers.push(new GiveawayBotMessageHanlder(this.businessManager));
         this.ignoreMessageHandler = new IgnoreMessageHandler(this.businessManager);
     }
 
@@ -86,12 +90,12 @@ export default class WebSocketListener {
             let type = j['t'];
             if (type == 'READY') {
                 this.businessManager.fillDataFromWebSocketReadyJson(j['d']);
-            } else if (type == 'MESSAGE_CREATE') {
+            } else if (type == 'MESSAGE_CREATE'/* || type == 'MESSAGE_UPDATE'*/) {
                 let messageJ = j['d'];
                 let messageS = JSON.stringify(messageJ);
-                if (!this.ignoreMessageHandler.isHittingBlacklist(messageJ, messageS)) {
+                if (!this.ignoreMessageHandler.isHittingBlacklist(type, messageJ)) {
                     this.messageHandlers.forEach((h) => {
-                        if (h.needProcess(messageJ, messageS)) {
+                        if (h.needProcess(type, messageJ)) {
                             let data = h.pickUpDataFromMessage(messageJ);
                             if (data) {
                                 h.action(data);
@@ -101,7 +105,7 @@ export default class WebSocketListener {
                 }
             }
         } catch (e) {
-            error(`message process error: ${e}, message(${message.length}):${message}`);
+            error(`message process error: ${e}, message(${message.length}):${message}, stack:\n ${e.stack}`);
         }
 
     }

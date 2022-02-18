@@ -1,15 +1,15 @@
 import { delay, log, error } from '../util'
 import G from '../G';
 
-export default class JoinRumbleRoyaleMessageHanlder {
+export default class RumbleRoyaleJoinMessageHanlder {
     constructor(businessManager) {
         this.businessManager = businessManager;
     }
 
-    needProcess(messageJ, messageS) {
+    needProcess(type, messageJ) {
         return messageJ['author'] &&
         messageJ['author']['id'] == '693167035068317736' && 
-        messageS.indexOf('Click the emoji below to join') != -1;
+        JSON.stringify(messageJ).indexOf('Click the emoji below to join') != -1;
     }
 
     pickUpDataFromMessage(messageJ) {
@@ -25,7 +25,7 @@ export default class JoinRumbleRoyaleMessageHanlder {
         // notification
         await Notification.requestPermission();
         let messageUrl = `https://discord.com/channels/${channel.guild.id}/${data.channelId}/${data.messageId}`;
-        let notification = new Notification(`Join Rumble Royale - ${channel.guild.name}`, {
+        let notification = new Notification(`Join Rumble Royale - [${channel.guild.name}]`, {
             body: `Channel: ${channel.name}`
         });
         notification.onclick = (e) => {
@@ -48,9 +48,9 @@ export default class JoinRumbleRoyaleMessageHanlder {
           }
         );
         if (response.status != 204) {
-            error(`Rumble Royale Join Failed, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
+            error(`[Rumble Royale] Join Failed, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
         } else{
-            log(`Rumble Royale Join Success, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
+            log(`[Rumble Royale] Join Success, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
         }
     }
 }

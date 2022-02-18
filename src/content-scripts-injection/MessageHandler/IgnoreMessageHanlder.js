@@ -5,9 +5,35 @@ export default class IgnoreMessageHandler {
         this.businessManager = businessManager;
     }
 
-    isHittingBlacklist(messageJ, messageS) {
+    isHittingBlacklist(type, messageJ) {
+        let channelId = messageJ['channel_id'];
+        let guildId = messageJ['guild_id'];
+        var guildName = null, channelName = null;
+        let channel = this.businessManager.getChannelById(channelId);
+        if (channel) {
+            guildName = channel.guild.name;
+            channelName = channel.name;
+        } else {
+            channelName = channelId;
+            let guild = this.businessManager.getGuildById(guildId);
+            if (guild) {
+                guildName = guild.name;
+            } else {
+                guildName = guildId;
+            }
+            log(`Cann't find guild by channel, [${guildId}(${guildName})-${channelId}]: https://discord.com/channels/${guildId}/${channelId}`);
+        }
+        if (guildName) {
+            if (guildName.indexOf('Fury of the fur') != -1 || guildName.indexOf('Roborovski NFT Collections') != -1){
+                let messageId = messageJ['id'];
+                let messageUrl = `https://discord.com/channels/${channel.guild.id}/${channelId}/${messageId}`;
+                return true;
+            }
+        }
+
         let blacklist = [
         ];
+        let messageS = JSON.stringify(messageJ);
         for (let i in blacklist) {
             let keyword = blacklist[i];
             if (messageS.indexOf(keyword) != -1) {

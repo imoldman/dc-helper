@@ -14,11 +14,15 @@ export default class BusinessManager {
     fillDataFromWebSocketReadyJson(j) {
         // self
         let uid = j['user']['id'];
+        this.name = j['user']['username'];
         if (this.uid != uid) {
-            error(`Uid isn't correct, should be ${this.uid}, but is ${uid}, name is ${name}`);
+            error(`Uid isn't correct, should be ${this.uid}, but is ${uid}, name is ${this.name}`);
         }
         this.uid = uid;
-        this.name = j['user']['username'];
+        this.token = j['analytics_token'];
+        if (W.token == null) {
+            log(`W.token is null, refresh to ${this.token}`);
+        }
 
         // guild and channel
         this.guilds = [];
@@ -65,6 +69,15 @@ export default class BusinessManager {
         this.channelId2Channel = channelId2Channel;
 
         // log(`Init Business Manager: ${JSON.stringify(this.guilds)}`);
+    }
+
+    getGuildById(guildId) {
+        for (let i in this.guilds) {
+            if (this.guilds[i].id == guildId) {
+                return this.guilds[i];
+            }
+        }
+        return null;
     }
 
     getChannelById(channelId) {

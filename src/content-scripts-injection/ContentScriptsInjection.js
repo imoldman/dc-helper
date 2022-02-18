@@ -34,6 +34,8 @@ export default class ContentScriptsInjection {
         // 行动
         document.addEventListener('DOMContentLoaded', () => this.initChatInputHook());
         this.startDialogFetcher();
+
+        log(`ContentScriptsInjection Inited`);
     }
 
     async startDialogFetcher() {

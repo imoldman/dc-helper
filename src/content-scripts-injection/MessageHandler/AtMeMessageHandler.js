@@ -5,7 +5,7 @@ export default class ATMeMessageHandler {
         this.businessManager = businessManager;
     }
 
-    needProcess(messageJson, messageString) {
+    needProcess(type, messageJson) {
         let mentionsJson = messageJson['mentions'];
         if (mentionsJson) {
             for (let i in mentionsJson) {
