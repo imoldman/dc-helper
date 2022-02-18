@@ -30,7 +30,6 @@ export default class NewChannelHandler extends BaseHandler {
             channel.mentionCount = 0;
             if (data.name.indexOf('ticket-') == 0 || data.name.indexOf('support-') == 0){
                 // ignore 
-                log(`New Channel Create [${guild.name} - ${data.name}], but We Ignored It.`)
             } else {
                 guild.channels.push(channel);
                 let url = `https://discord.com/channels/${data.guildId}/${data.channelId}`;
