@@ -21,7 +21,9 @@ export default class IgnoreMessageHandler {
             } else {
                 guildName = guildId;
             }
-            log(`Cann't find guild by channel, [${guildId}(${guildName})-${channelId}]: https://discord.com/channels/${guildId}/${channelId}`);
+            if (guildId) {
+                log(`Cann't find guild by channel, [${guildId}(${guildName})-${channelId}]: https://discord.com/channels/${guildId}/${channelId}`);
+            }
         }
         if (guildName) {
             if (guildName.indexOf('Fury of the fur') != -1 || guildName.indexOf('Roborovski NFT Collections') != -1){

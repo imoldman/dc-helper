@@ -1,4 +1,7 @@
 export default class Channel {
+    static TypeNormal = 0;
+    static TypeAnnouncement = 5;
+
     constructor(channelId, name, inWhichGuild) {
         this.id = channelId;
         this.name = name;

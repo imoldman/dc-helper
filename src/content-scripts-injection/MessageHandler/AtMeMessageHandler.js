@@ -1,3 +1,4 @@
+import NotificationHelper from '../NotificationHelper';
 import { delay, log, error } from '../util'
 
 export default class ATMeMessageHandler {
@@ -35,12 +36,7 @@ export default class ATMeMessageHandler {
         let body = `[${data.authorName}]: ${data.content}\n${data.embedsDescriptions.join('\n')}`;
 
         // notification
-        await Notification.requestPermission();
-        let notification = new Notification(title, {body: body});
-        notification.onclick = (e) => {
-            e.preventDefault();
-            window.open(messageUrl, '_blank');
-        };
+        NotificationHelper.notify(title, body, messageUrl);
         log(`@ME Message, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}, from ${data.authorName}`);
     }
 }

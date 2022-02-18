@@ -1,5 +1,6 @@
 import { delay, log } from '../util'
 import G from '../G'
+import NotificationHelper from '../NotificationHelper';
 
 export default class InviteTrackerGiveawayMessageHandler {
     constructor(businessManager) {
@@ -37,7 +38,7 @@ export default class InviteTrackerGiveawayMessageHandler {
             } else {
                 let channel = this.businessManager.getChannelById(data.channelId);
                 let messageUrl = `https://discord.com/channels/${channel.guild.id}/${data.channelId}/${data.messageId}`;
-                if (data.raw.indexOf('React with') != -1 && data.raw.indexOf('to enter the giveaway!') != -1) {
+                if (data.raw.indexOf('React with') != -1 && data.raw.indexOf('to enter') != -1) {
                     // 参加抽奖
                     await delay(200);
                     let response = await fetch(`https://discord.com/api/v9/channels/${data.channelId}/messages/${data.messageId}/reactions/%F0%9F%8E%89/%40me`, {
@@ -60,15 +61,8 @@ export default class InviteTrackerGiveawayMessageHandler {
                         title = `Join Giveaway Success - [${channel.guild.name}]`;
                         log(`[Invite Tracker Giveaway] Join Success, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
                     }
-                    await Notification.requestPermission();
-                    let notification = new Notification(title, {
-                        body: `Channel: ${channel.name}`
-                    });
-                    notification.onclick = (e) => {
-                        e.preventDefault();
-                        window.open(messageUrl, '_blank');
-                    };
-
+                    let body = `Channel: ${channel.name}`;
+                    NotificationHelper.notify(title, body, messageUrl);
                 } else if (data.mentionIds.indexOf(this.businessManager.uid) != -1) {
                     // 提到自己
                     log(`[Invite Tracker Giveaway] @ME, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);

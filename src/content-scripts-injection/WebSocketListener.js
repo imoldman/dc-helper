@@ -1,6 +1,7 @@
 import pako from 'pako';
 import BusinessManager from './BusinessManager';
 import ATMeMessageHandler from './MessageHandler/AtMeMessageHandler';
+import GiveawayBoatMessageHanlder from './MessageHandler/GiveawayBoatMessageHandler';
 import GiveawayBotMessageHanlder from './MessageHandler/GiveawayBotMessageHanlder';
 import IgnoreMessageHandler from './MessageHandler/IgnoreMessageHanlder';
 import InviteTrackerGiveawayMessageHandler from './MessageHandler/InviteTrackerGiveawayMessageHandler';
@@ -20,11 +21,12 @@ export default class WebSocketListener {
 
     initMessaegHandlers() {
         this.messageHandlers = [];
+        this.messageHandlers.push(new ATMeMessageHandler(this.businessManager));
         this.messageHandlers.push(new RumbleRoyaleJoinMessageHanlder(this.businessManager));
         this.messageHandlers.push(new RumbleRoyaleCommonMessageHandler(this.businessManager));
-        this.messageHandlers.push(new ATMeMessageHandler(this.businessManager));
         this.messageHandlers.push(new InviteTrackerGiveawayMessageHandler(this.businessManager));
         this.messageHandlers.push(new GiveawayBotMessageHanlder(this.businessManager));
+        this.messageHandlers.push(new GiveawayBoatMessageHanlder(this.businessManager));
         this.ignoreMessageHandler = new IgnoreMessageHandler(this.businessManager);
     }
 

@@ -2,14 +2,14 @@ import { delay, log } from '../util'
 import G from '../G'
 import NotificationHelper from '../NotificationHelper';
 
-export default class GiveawayBotMessageHanlder {
+export default class GiveawayBoatMessageHanlder {
     constructor(businessManager) {
         this.businessManager = businessManager;
     }
 
     needProcess(type, messageJ) {
         return messageJ['author'] &&
-        messageJ['author']['id'] == '294882584201003009';
+        messageJ['author']['id'] == '530082442967646230';
     }
 
     pickUpDataFromMessage(messageJ) {
@@ -32,7 +32,7 @@ export default class GiveawayBotMessageHanlder {
         if (!data.guildId) {
             // 私聊信息
             let messageUrl = `https://discord.com/channels/@me/${data.channelId}/${data.messageId}`;
-            log(`[GiveawayBot] DM Message: ${messageUrl}`);
+            log(`[GiveawayBoat] DM Message: ${messageUrl}`);
         } else {
             let channel = this.businessManager.getChannelById(data.channelId);
             let messageUrl = `https://discord.com/channels/${channel.guild.id}/${data.channelId}/${data.messageId}`;
@@ -54,10 +54,10 @@ export default class GiveawayBotMessageHanlder {
                 var title = null;
                 if (response.status != 204) {
                     title = `Join Giveaway Failed - [${channel.guild.name}]`;
-                    error(`[GiveawayBot] Join Failed, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
+                    error(`[GiveawayBoat] Join Failed, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
                 } else{
                     title = `Join Giveaway Success - [${channel.guild.name}]`;
-                    log(`[GiveawayBot] Join Success, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
+                    log(`[GiveawayBoat] Join Success, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
                 }
                 let body = `Channel: ${channel.name}`;
                 NotificationHelper.notify(title, body, messageUrl);
@@ -66,18 +66,18 @@ export default class GiveawayBotMessageHanlder {
                 var title = null;
                 if (data.mentionIds.indexOf(this.businessManager.uid) != -1) {
                     title = `Giveaway Result @ME - [${channel.guild.name}]`;
-                    log(`[GiveawayBot] Result @ME, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
+                    log(`[GiveawayBoat] Result @ME, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
                 } else {
                     title = `Giveaway Result NO ME - [${channel.guild.name}]`
-                    log(`[GiveawayBot] Result NO ME, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
+                    log(`[GiveawayBoat] Result NO ME, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
                 }
                 let body = `Channel: ${channel.name}`;
                 NotificationHelper.notify(title, body, messageUrl);
             } else if (data.mentionIds.indexOf(this.businessManager.uid) != -1) {
                 // 提到自己
-                log(`[GiveawayBot] Common @ME, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
+                log(`[GiveawayBoat] Common @ME, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
             } else {
-                log(`[GiveawayBot] Common Message, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
+                log(`[GiveawayBoat] Common Message, in [${channel.guild.name} - ${channel.name}]: ${messageUrl}`);
             }
         }
     }
